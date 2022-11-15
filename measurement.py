@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 from PIL import Image as im
 import glob
 from rembg import remove
+import math
 #import frst as fr
 
 
@@ -101,45 +102,69 @@ def edge_contour_search_algorithm(img_gray,image):
     cv.waitKey(0)
     #cv.imwrite('image_thres1.jpg', thresh)
     cv.destroyAllWindows()
-    contours, hierarchy = cv.findContours(image=thresh, mode=cv.RETR_TREE, method=cv.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv.findContours(image=thresh, mode=cv.RETR_TREE, method=cv.CHAIN_APPROX_SIMPLE)
     #return contours
 
+    
     # draw contours on the original image
     image_copy = image.copy()
     cv.drawContours(image=image_copy, contours=contours, contourIdx=-1,
                  color=(0, 255, 0), thickness=2, lineType=cv.LINE_AA)
+    print(contours)
+
+    for cnt in contours:
+        if(len(cnt)>=5):
+            res = image.copy()
+            #print(cnt)
+            ellipse= cv.fitEllipse(cnt)
+            print(ellipse[1])
+            print("MAJOR AXE: " + str(ellipse[1][0]))
+            print("Minoe AXE: " + str(ellipse[1][1]))
+            a = ellipse[1][0]
+            b = ellipse[1][1]
+            ellipse_perimeter = 2*math.pi* math.sqrt((math.pow(a,2)+math.pow(b,2)/2))
+            print("IL PERIMETRO DELL?ELLISSE È: "+ str(ellipse_perimeter))
+
+            cv.ellipse(res, ellipse, color = (0,0,255),thickness = 2)
+            cv.imshow("RES",res)
+            cv.waitKey(0)
+
+
+
+
+    # # see the results
+    # cv.imshow('None approximation', image_copy)
+    # cv.waitKey(0)
+    # cv.imwrite('contours_none_image1.jpg', image_copy)
     
 
-    # see the results
-    cv.imshow('None approximation', image_copy)
-    cv.waitKey(0)
-    cv.imwrite('contours_none_image1.jpg', image_copy)
-    
-    for i in range(1):
+
+    ###################SCOMMENTARE PER TROVARE I CENTRI#####################
+    # for i in range(1):
             
             
-            circles = cv.HoughCircles(img_gray, cv.HOUGH_GRADIENT, dp=2, minDist=50,param1= ret, param2=30, minRadius=0, maxRadius=-1)
-        # # cv.imshow("detected circles", img)
-        # # cv.waitKey(0)
+    #         circles = cv.HoughCircles(img_gray, cv.HOUGH_GRADIENT, dp=2, minDist=50,param1= ret, param2=30, minRadius=0, maxRadius=-1)
+    #     # # cv.imshow("detected circles", img)
+    #     # # cv.waitKey(0)
         
-            if circles is not None:
-                circles = np.uint16(np.around(circles))
-                for i in circles[0, :]:
-                 # draw the outer circle
-                    cv.circle(image_copy, (i[0], i[1]), i[2], (0, 255, 0), 2)
-                    # draw the center of the circle
-                    cv.circle(image_copy, (i[0], i[1]), 2, (0, 0, 255), 3)
+    #         if circles is not None:
+    #             circles = np.uint16(np.around(circles))
+    #             for i in circles[0, :]:
+    #              # draw the outer circle
+    #                 cv.circle(image_copy, (i[0], i[1]), i[2], (0, 255, 0), 2)
+    #                 # draw the center of the circle
+    #                 cv.circle(image_copy, (i[0], i[1]), 2, (0, 0, 255), 3)
         
-                cv.imshow("detected circles", image_copy)
-                cv.waitKey(0)
-                cv.destroyAllWindows()
+    #             cv.imshow("detected circles", image_copy)
+    #             cv.waitKey(0)
+    #             cv.destroyAllWindows()
 
 def main():
     # for i in range(len(argv)):
     for image in glob.glob('/home/bruno/Desktop/LABIAGI_grapesdetector/test/*.jpg'):
         # for image in glob.glob('test_img.png'):
 
-        input = cv.imread(image, 1)
+        cimg = cv.imread(image, 1)
 
         cimg = remove(input)
 
