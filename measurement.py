@@ -100,7 +100,7 @@ def edge_contour_search_algorithm(img_gray,image):
 # visualize the binary image
     cv.imshow('Binary image', thresh)
     cv.waitKey(0)
-    #cv.imwrite('image_thres1.jpg', thresh)
+    cv.imwrite('image_thres1.jpg', thresh)
     cv.destroyAllWindows()
     contours, hierarchy = cv.findContours(image=thresh, mode=cv.RETR_TREE, method=cv.CHAIN_APPROX_SIMPLE)
     #return contours
@@ -110,24 +110,65 @@ def edge_contour_search_algorithm(img_gray,image):
     image_copy = image.copy()
     cv.drawContours(image=image_copy, contours=contours, contourIdx=-1,
                  color=(0, 255, 0), thickness=2, lineType=cv.LINE_AA)
-    print(contours)
-
+    #print(contours)
+    i = 0
     for cnt in contours:
         if(len(cnt)>=5):
             res = image.copy()
             #print(cnt)
             ellipse= cv.fitEllipse(cnt)
-            print(ellipse[1])
-            print("MAJOR AXE: " + str(ellipse[1][0]))
-            print("Minoe AXE: " + str(ellipse[1][1]))
+            #print(ellipse[1])
+            #print("MAJOR AXE: " + str(ellipse[1][0]))
+            #print("Minoe AXE: " + str(ellipse[1][1]))
             a = ellipse[1][0]
             b = ellipse[1][1]
             ellipse_perimeter = 2*math.pi* math.sqrt((math.pow(a,2)+math.pow(b,2)/2))
-            print("IL PERIMETRO DELL?ELLISSE È: "+ str(ellipse_perimeter))
-
+            print("IL PERIMETRO DELL'ELLISSE È: "+ str(ellipse_perimeter))
+            #print(cv.point(cnt))
+            rect = cv.minAreaRect(cnt)
+            #print(rect)
+            box = cv.boxPoints(rect)
+            box = np.int0(box) #np.intp: Integer used for indexing (same as C ssize_t; normally either int32 or int64)
+            #print(box)
+            cv.drawContours(res, [box], 0, (255,0,0),thickness= 2)
             cv.ellipse(res, ellipse, color = (0,0,255),thickness = 2)
+            ####################### L1 ########################################
+            ptm_l1 = (int((box[0][0]+box[1][0])/2),int((box[0][1]+box[1][1])/2)) #PM L1
+            # cv.circle(res,(box[0][0],box[0][1]), 3, (0,255,0), -1)#V0
+            # cv.circle(res,(box[1][0],box[1][1]), 3, (0,255,0), -1)#V1
+            cv.circle(res,ptm_l1, 3, (0,255,0), -1)
+            ################################################################
+
+            ###################### L2 ##########################################
+            ptm_l2 = (int((box[3][0]+box[2][0])/2),int((box[3][1]+box[2][1])/2)) #PM L2
+            # cv.circle(res,(box[3][0],box[3][1]), 10, (0,255,0), -1) #V3
+            # cv.circle(res,(box[2][0],box[2][1]), 10, (0,255,0), -1) #V2
+            cv.circle(res,ptm_l2, 3, (0,255,0), -1)
+            ###################################################################
+
+            ###################### L4 #########################################
+            ptm_l4 = (int((box[0][0]+box[3][0])/2), int((box[0][1]+box[3][1])/2))
+            cv.circle(res,ptm_l4, 3, (0,255,0), -1)
+            ###################################################################
+
+            ###################### L3 #########################################
+            ptm_l3 = (int((box[1][0]+box[2][0])/2), int((box[1][1]+box[2][1])/2))
+            cv.circle(res,ptm_l3, 3, (0,255,0), -1)
+            #####################################################################
+
+
+
+
+
+            
+
+            cv.line(res, ptm_l1, ptm_l2, (0,255,0), 3) 
+            cv.line(res,ptm_l3,ptm_l4, (0,255,0), 3)
+
             cv.imshow("RES",res)
             cv.waitKey(0)
+            cv.imwrite('/Results/image_thres'+str(i)+'.jpg', res)
+            i+=1
 
 
 
@@ -164,7 +205,7 @@ def main():
     for image in glob.glob('/home/bruno/Desktop/LABIAGI_grapesdetector/test/*.jpg'):
         # for image in glob.glob('test_img.png'):
 
-        cimg = cv.imread(image, 1)
+        input = cv.imread(image, 1)
 
         cimg = remove(input)
 
@@ -188,9 +229,9 @@ def main():
         # mode: BRIGHT, DARK, or BOTH
 
         # def frst(img, radii, alpha, beta, stdFactor, mode='BOTH'):
-        S = frst(img, 1, 2, 0.1, 0.1, 'BOTH')
-        cv.imshow("S", S)
-        cv.waitKey(0)
+        # S = frst(img, 1, 2, 0.1, 0.1, 'BOTH')
+        # cv.imshow("S", S)
+        # cv.waitKey(0)
 
     # for i in range(0,200):
     #     print(i)
@@ -200,13 +241,13 @@ def main():
         
         contour_img = edge_contour_search_algorithm(img,cimg) ## forse S al posto di img?
         
-        dst = cv.cornerHarris(img,2,3,0.04)
-        #result is dilated for marking the corners, not important
-        dst = cv.dilate(dst,None)
-        ccimg = input.copy()
-        ccimg[dst>0.01*dst.max()]=[0,0,255]
-        cv.imshow("Edge", ccimg)
-        cv.waitKey(0)
+        # dst = cv.cornerHarris(img,2,3,0.04)
+        # #result is dilated for marking the corners, not important
+        # dst = cv.dilate(dst,None)
+        # ccimg = input.copy()
+        # ccimg[dst>0.01*dst.max()]=[0,0,255]
+        # cv.imshow("Edge", ccimg)
+        # cv.waitKey(0)
 
 
 if __name__ == "__main__":
