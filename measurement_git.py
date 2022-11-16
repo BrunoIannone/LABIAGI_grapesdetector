@@ -7,7 +7,7 @@ import glob
 from rembg import remove
 import math
 #import frst as fr
-from utils import *
+from utils_git import *
 def main():
     # for i in range(len(argv)):
     for image in glob.glob('/home/bruno/Desktop/LABIAGI_grapesdetector/test/*.jpg'):
@@ -22,11 +22,13 @@ def main():
         cv.waitKey(0)
 
         img = cv.cvtColor(cimg, cv.COLOR_RGB2GRAY)
-        img = cv.bilateralFilter(img, 5, 20, 20)
-        cv.imshow("bilateral", img)
-        cv.waitKey(0)
+        img = cv.GaussianBlur(img, (7, 7), 0)
+       # cv.imshow("bilateral", img)
+        #cv.waitKey(0)
 
-        img = cv.Canny(img, 1, 100)
+        img = cv.Canny(img, 50, 100)
+        img = cv.dilate(img, None, iterations=1)
+        img = cv.erode(img, None, iterations=1)
 
         # Performs fast radial symmetry transform
         # img: input image, grayscale
