@@ -7,6 +7,6 @@ roboflow:
   url: https://universe.roboflow.com/iagi/iagi/dataset/20
   version: 20
   workspace: iagi
-test: ../test/images
+test: ../data/images
 train: /home/bruno/Desktop/LABIAGI_grapesdetector//IAGI-20/train/images
 val: /home/bruno/Desktop/LABIAGI_grapesdetector//IAGI-20/valid/images
