@@ -4,8 +4,9 @@ import cv2 as cv
 # from matplotlib import pyplot as plt
 # from PIL import Image as im
 import glob
-from rembg import remove #FIXME: incapsula questa scelta di bkg removal in una classe o funzione a parte e rendila
+#FIXME: incapsula questa scelta di bkg removal in una classe o funzione a parte e rendila
 # modificabile usando lo "strategy" pattern (se hai nozioni di ingegneria del software)
+from rembg import remove
 # import math
 # import frst as fr
 from utils_git import *
