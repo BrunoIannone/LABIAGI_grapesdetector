@@ -102,7 +102,9 @@ def edge_contour_search_algorithm(img_gray,image):
     
     cnts= cv.findContours(image=img_gray, mode = cv.RETR_EXTERNAL, method=cv.CHAIN_APPROX_SIMPLE)
     #return contours
+    
     cnts = imutils.grab_contours(cnts)
+    
     (cnts, _) = contours.sort_contours(cnts)
     pixelsPerMetric = None
 
@@ -167,9 +169,12 @@ def edge_contour_search_algorithm(img_gray,image):
         cv.putText(orig, "{:.1f}cm".format(dimB),
         (int(trbrX ), int(trbrY)), cv.FONT_HERSHEY_SIMPLEX,
         0.65, (255, 255, 255), 2)
+
 # show the output image
-        print("Il perimetro dell'ellisse è: " + str(math.pi*(3*(dimA+dimB)-math.sqrt((3*dimA+dimB)*(dimA+3*dimB)))))
+        res = math.pi*(3*(dimA+dimB)-math.sqrt((3*dimA+dimB)*(dimA+3*dimB)))
+        print("Il perimetro dell'ellisse è: " + str(res))
         cv.imshow("Image", orig)
         cv.waitKey(0)
+        return res
         
    
