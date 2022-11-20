@@ -6,43 +6,53 @@ from PIL import Image as im
 import glob
 from rembg import remove
 import math
+import src.berrysizeestimator as est
 #import frst as fr
 from utils_git import *
+
+
 def main():
+
+    input_image = cv.imread("dw.jpeg", 1)
+    # cv.imshow("input", input_image)
+    # cv.waitKey(0)
+
+    estimator = est.BerrySizeEstimator(input_image)
+    ref = estimator.DetectReferiment()
+    print(ref)
+    with open('/home/bruno/Desktop/LABIAGI_grapesdetector/yolov5/runs/detect/exp14/labels/dw.txt') as f:
+        line = f.readline()
     
-    # for i in range(len(argv)):
-    for image in glob.glob('/home/bruno/Desktop/LABIAGI_grapesdetector/test/*.jpg'):
-        # for image in glob.glob('test_img.png'):
-        input = cv.imread('dw.jpeg', 1)
-        #cv.imshow("input1",input)
-        #cv.waitKey(0)
+        while(line != ''):       
+        #print("Ricomincio")
+        #cropped = cv.imread(image, 1)
 
+        # cv.imshow("image", cropped)
+        # cv.waitKey(0)
         
-        
-        
-        input = cv.imread(image, 1)
+            line = line.strip().split(" ")
+            #print(line)
+            tl, tr, bl, br = estimator.NormalizedToImgCoordinatesForBbox(
+                float(line[1]), float(line[2]), float(line[3]), float(line[4]))
+            # test = estimator.BbVerticesDrawer(input_image,tl,tr,bl,br)
+            cropped = input_image[tl[1]:bl[1],tl[0]:br[0],: ].copy()
+            processed_im = estimator.Preprocessing(cropped)
+            # cv.imshow("prepro", processed_im)
+            # cv.waitKey(0)
+            
+            # cv.imshow("input", input_image[tl[1]:bl[1],tl[0]:br[0],: ])
+            
+            # cv.waitKey(0)
+            contour_img = edge_contour_search_algorithm(
+                processed_im, input_image[tl[1]:bl[1],tl[0]:br[0],: ], (2*ref)/4.0)
+            # cv.imshow("input", input_image)
+            # cv.waitKey(0)
+            #print("finisco")
+            line = f.readline()
 
-        cimg = remove(input)
-
-        #cv.imshow("img", cimg)
-
-        #cv.waitKey(0)
-
-        img = cv.cvtColor(cimg, cv.COLOR_RGB2GRAY)
-        img = cv.GaussianBlur(img, (7, 7), 0)
-        # cv.imshow("bilateral", img)
-        #cv.waitKey(0)
-
-        img = cv.Canny(img, 50, 100)
-        img = cv.dilate(img, None, iterations=1)
-        img = cv.erode(img, None, iterations=1)
-
-    
-        
-        contour_img = edge_contour_search_algorithm(img,cimg) 
-        
-    
-
+           
+        cv.imshow("input", input_image)
+        cv.waitKey(0)
 
 if __name__ == "__main__":
     # main(sys.argv[1:])
