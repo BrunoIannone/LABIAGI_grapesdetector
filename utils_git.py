@@ -35,7 +35,6 @@ def edge_contour_search_algorithm(img_gray, image, pixelsPerMetric):
     # cv.drawContours(image=image_copy, contours=cnts, contourIdx=-1,
     #              color=(0, 255, 0), thickness=2, lineType=cv.LINE_AA)
     # print(contours)
-    existing = 0
     maxDimA = 0
     maxDimB = 0
     tl_max = 0
@@ -53,7 +52,6 @@ def edge_contour_search_algorithm(img_gray, image, pixelsPerMetric):
         # if the contour is not sufficiently large, ignore it
         if cv.contourArea(c) < 1 or len(c) < 5:
             continue
-        existing = 1
         # compute the rotated bounding box of the contour
         #print("lunghezza" + str( len(c)))
         ellipse = cv.fitEllipse(c)
@@ -92,17 +90,19 @@ def edge_contour_search_algorithm(img_gray, image, pixelsPerMetric):
                 continue
 
         #print((int(tltrX), int(tltrY)))
-        cv.circle(orig, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
-        cv.circle(orig, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
-        cv.circle(orig, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
-        cv.circle(orig, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
-        #draw lines between the midpoints
-        cv.line(orig, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
-        (255, 0, 255), 2)
-        cv.line(orig, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
-        (255, 0, 255), 2)
+        # cv.circle(orig, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
+        # cv.circle(orig, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
+        # cv.circle(orig, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
+        # cv.circle(orig, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
+        # #draw lines between the midpoints
+        # cv.line(orig, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
+        # (255, 0, 255), 2)
+        # cv.line(orig, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
+        # (255, 0, 255), 2)
+
         dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
         dB = dist.euclidean((tlblX, tlblY), (trbrX, trbrY))
+
         # if the pixels per metric has not been initialized, then
         # compute it as the ratio of pixels to supplied metric
         # (in this case, inches)
@@ -110,6 +110,7 @@ def edge_contour_search_algorithm(img_gray, image, pixelsPerMetric):
         #     pixelsPerMetric = dB / 2.32
         # print(dA)
         # print(pixelsPerMetric)
+
         dimA = dA / pixelsPerMetric
         dimB = dB / pixelsPerMetric
         if (dimA > maxDimA and dimB > maxDimB):
@@ -124,15 +125,18 @@ def edge_contour_search_algorithm(img_gray, image, pixelsPerMetric):
             max_midpoint_tlbl = (tlblX, tlblY)
             max_midpoint_trbr = (trbrX, trbrY)
             max_box = box.copy()
+
         # cv.imshow("temp_contour", orig)
         # cv.waitKey(0)
     # draw the object sizes on the image
-    if (existing and type(max_box) != type(0)):
-        final = image.copy()
+    if (type(max_box) != type(0)):
+        #final = image.copy()
         #print("MaxBox: " + str(max_box))        
-        cv.drawContours(image, [max_box.astype("int")], -1, (0, 255, 0), 2)
-        for (x, y) in max_box:
-                cv.circle(image, (int(x), int(y)), 5, (0, 0, 255), -1)
+        #cv.drawContours(image, [max_box.astype("int")], -1, (0, 255, 0), 2)
+        
+        # for (x, y) in max_box:
+        #         cv.circle(image, (int(x), int(y)), 5, (0, 0, 255), -1)
+        
         cv.circle(image, (int(max_midpoint_tltr[0]), int(
                 max_midpoint_tltr[1])), 5, (255, 0, 0), -1)
         cv.circle(image, (int(max_midpoint_blbr[0]), int(
@@ -145,15 +149,15 @@ def edge_contour_search_algorithm(img_gray, image, pixelsPerMetric):
                 (255, 0, 255), 2)
         cv.line(image, (int(max_midpoint_tlbl[0]), int(max_midpoint_tlbl[1])), (int(max_midpoint_trbr[0]), int(max_midpoint_trbr[1])),
                 (255, 0, 255), 2)
-        cv.putText(image, "{:.1f}cm".format(dimA),
+        cv.putText(image, "{:.1f}cm".format(maxDimA),
                 (int(max_midpoint_tltr[0]), int(max_midpoint_tltr[1])), cv.FONT_HERSHEY_SIMPLEX,
-                0.65, (255, 255, 255), 2)
-        cv.putText(image, "{:.1f}cm".format(dimB),
+                0.40, (255, 255, 255), 2)
+        cv.putText(image, "{:.1f}cm".format(maxDimB),
                 (int(max_midpoint_trbr[0]), int(max_midpoint_trbr[1])), cv.FONT_HERSHEY_SIMPLEX,
-                0.65, (255, 255, 255), 2)
+                0.40, (255, 255, 255), 2)
 
         # show the output image
         res = math.pi*(3*(maxDimA+maxDimB)-math.sqrt((3*maxDimA+maxDimB)*(maxDimA+3*maxDimB)))
         print("Il perimetro dell'ellisse è: " + str(res))
-        # cv.imshow("def_contour", final)
+        # cv.imshow("def_contour", image)
         # cv.waitKey(0)

@@ -45,11 +45,13 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         return super().estimate()
 
     def Preprocessing(self,image):
-        (T, threshInv) = cv.threshold(image, 0, 255,	cv.THRESH_BINARY_INV or cv.THRESH_OTSU) #OTSU
-        
-        no_bkgrnd_img = self.BackGroundRemover(image)
-        preprocessed_img = cv.cvtColor(no_bkgrnd_img, cv.COLOR_RGB2GRAY)
-        preprocessed_img = cv.GaussianBlur(preprocessed_img, (7, 7), 0)
+        preprocessed_img = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        (T, threshInv) = cv.threshold(image, 200, 255,cv.THRESH_BINARY_INV)
+        #preprocessed_img = self.BackGroundRemover(preprocessed_img)
+         #OTSU
+        # cv.imshow("thresh", threshInv)
+        # cv.waitKey(0)
+        preprocessed_img = cv.GaussianBlur(preprocessed_img, (5, 5), 0)
         preprocessed_img = cv.Canny(preprocessed_img, T/2, T,L2gradient=True)
         # preprocessed_img = cv.dilate(preprocessed_img, None, iterations=1)
         # preprocessed_img = cv.erode(preprocessed_img, None, iterations=1)
@@ -99,7 +101,7 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
     def DetectReferiment(self):
         img = cv.cvtColor(self.input_image, cv.COLOR_RGB2GRAY)
         img = cv.medianBlur(img, 5)
-        (T, threshInv) = cv.threshold(img, 0, 255,
+        (T, threshInv) = cv.threshold(img, 127, 255,
                                       cv.THRESH_BINARY_INV | cv.THRESH_OTSU)  # OTSU
         # cv.imshow("thres", threshInv)
         # cv.waitKey(0)
@@ -118,3 +120,14 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
             return circles[0][0][2]
             
+    
+    def TestPreprocess(self,image):
+        
+        preprocessed_img = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        preprocessed_img = cv.GaussianBlur(preprocessed_img,(3,3),0)
+        T,threshinv = cv.threshold(preprocessed_img,127,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
+        preprocessed_img = cv.Canny(threshinv, T/2, T,L2gradient=True)
+        # preprocessed_img = cv.dilate(preprocessed_img, None, iterations=1)
+        # preprocessed_img = cv.erode(preprocessed_img, None, iterations=1)
+        
+        return preprocessed_img

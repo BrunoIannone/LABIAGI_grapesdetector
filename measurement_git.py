@@ -14,6 +14,7 @@ from utils_git import *
 def main():
 
     input_image = cv.imread("dw.jpeg", 1)
+    result_image = input_image.copy()
     # cv.imshow("input", input_image)
     # cv.waitKey(0)
 
@@ -36,7 +37,8 @@ def main():
                 float(line[1]), float(line[2]), float(line[3]), float(line[4]))
             # test = estimator.BbVerticesDrawer(input_image,tl,tr,bl,br)
             cropped = input_image[tl[1]:bl[1],tl[0]:br[0],: ].copy()
-            processed_im = estimator.Preprocessing(cropped)
+            #processed_im = estimator.Preprocessing(cropped)
+            processed_im = estimator.TestPreprocess(cropped)
             # cv.imshow("prepro", processed_im)
             # cv.waitKey(0)
             
@@ -44,16 +46,16 @@ def main():
             
             # cv.waitKey(0)
             contour_img = edge_contour_search_algorithm(
-                processed_im, input_image[tl[1]:bl[1],tl[0]:br[0],: ], (2*ref)/4.0)
+                processed_im, result_image[tl[1]:bl[1],tl[0]:br[0],: ], (2*ref)/4.0)
             # cv.imshow("input", input_image)
             # cv.waitKey(0)
             #print("finisco")
             line = f.readline()
 
            
-        cv.imshow("input", input_image)
-        cv.waitKey(0)
-
+        # cv.imshow("input", result_image)
+        # cv.waitKey(0)
+        cv.imwrite('/home/bruno/Desktop/LABIAGI_grapesdetector/res.jpg',result_image)
 if __name__ == "__main__":
     # main(sys.argv[1:])
     main()
