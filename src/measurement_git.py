@@ -1,78 +1,56 @@
-# import sys
+import sys
 import cv2 as cv
-# import numpy as np
-# from matplotlib import pyplot as plt
-# from PIL import Image as im
+import numpy as np
+from matplotlib import pyplot as plt
+from PIL import Image as im
 import glob
-#FIXME: incapsula questa scelta di bkg removal in una classe o funzione a parte e rendila
-# modificabile usando lo "strategy" pattern (se hai nozioni di ingegneria del software)
-from rembg import remove
-# import math
-# import frst as fr
+#from rembg import remove
+import math
+import berrysizeestimator as est
+
 from utils_git import *
 
-#FIXME: le funzionalità di questo main dovrebbero essere incapsulate in una classe, così che il risultato finale sia
-# un codice in cui la classe può essere importata in altri progetti. Il main lo usi come uno script di data,
-# o meglio ancora, ti fai una struttura di data automatico con pytest.
+
 def main():
-    # for i in range(len(argv)):
-    # FIXME: rimuovi reference a path assoluti, crea una variabile ROOT_DIR in un file di configurazione python e usa
-    #  il comando os.path.realpath(os.path.join(os.path.dirname(__file__), '..')) per impostarla. Tutti i path che
-    #  usi nel progetto devono essere riferiti a questa
-    for image in glob.glob('data/*.jpg'):
-        # for image in glob.glob('test_img.png'):
 
-        input = cv.imread(image, 1)
+    input_image = cv.imread("dw.jpeg", 1)
+    hough_image = input_image.copy()
+    ellipse_image = input_image.copy()
+    # cv.imshow("input", input_image)
+    # cv.waitKey(0)
 
-        # FIXME: a me da errore quando cerca di scaricare UNET perché è un file drive che è stato
-        #  scaricato troppe volte. Conviene, se vuoi usare questo modulo, includere i pesi in una cartella locale. È
-        #  poco carino che un progetto scrichi la roba i una cartella nascosta nella home...
-        cimg = remove(input)
+    #costruttore dello stimatore
+    
+    estimator = est.BerrySizeEstimator(input_image)
+    #Cerca il riferimento nell'immagine, 
+    # in questo caso uso la Hough transform 
+    # perché sto usando un oggetto circolare
+    
+    ref = estimator.DetectReferiment() 
+    #apro il file con le coordinate della bbox
+    with open('/home/bruno/Desktop/LABIAGI_grapesdetector/yolov5/runs/detect/exp14/labels/dw.txt') as f:
+        line = f.readline()
+    
+        while(line != ''):       
+        
+        
+            line = line.strip().split(" ")
+            
+            #converto le coordinate
+            tl, tr, bl, br = estimator.NormalizedToImgCoordinatesForBbox(
+                float(line[1]), float(line[2]), float(line[3]), float(line[4]))
+            
+            #recupero la porzione di immagine selezionata dalla bbox
+            cropped = input_image[tl[1]:bl[1],tl[0]:br[0],: ].copy()
+            
+            #Per fini di test, applico lo stimatore con entrambi i test
+            estimator.DetectorHough(cropped, hough_image[tl[1]:bl[1],tl[0]:br[0],: ],(2*ref)/4.0)
+            estimator.DetectorEllipses(cropped, ellipse_image[tl[1]:bl[1],tl[0]:br[0],: ],(2*ref)/4.0)
+            
+            line = f.readline()
 
-        cv.imshow("img", cimg)
-
-        cv.waitKey(0)
-
-        # FIXME: non sono sicuro che sia RGB, penso sia BGR di base. Attento anche sopra con il bkg removal. Fai un
-        #  check
-        img = cv.cvtColor(cimg, cv.COLOR_RGB2GRAY)
-        img = cv.GaussianBlur(img, (7, 7), 0)
-        # cv.imshow("bilateral", img)
-        # cv.waitKey(0)
-
-        img = cv.Canny(img, 50, 100)
-        img = cv.dilate(img, None, iterations=1)
-        img = cv.erode(img, None, iterations=1)
-
-        # Performs fast radial symmetry transform
-        # img: input image, grayscale
-        # radii: integer value for radius size in pixels (n in the original paper); also used to size gaussian kernel
-        # alpha: Strictness of symmetry transform (higher=more strict; 2 is good place to start)
-        # beta: gradient threshold parameter, float in [0,1]
-        # stdFactor: Standard deviation factor for gaussian kernel
-        # mode: BRIGHT, DARK, or BOTH
-
-        # def frst(img, radii, alpha, beta, stdFactor, mode='BOTH'):
-        # S = frst(img, 1, 2, 0.1, 0.1, 'BOTH')
-        # cv.imshow("S", S)
-        # cv.waitKey(0)
-
-        # for i in range(0,200):
-        #     print(i)
-        #     data  = cv.Canny(img,0,i)
-        #     cv.imshow("Canned", data)
-        #     cv.waitKey(0)
-
-        contour_img = edge_contour_search_algorithm(img, cimg)  ## forse S al posto di img?
-
-        # dst = cv.cornerHarris(img,2,3,0.04)
-        # #result is dilated for marking the corners, not important
-        # dst = cv.dilate(dst,None)
-        # ccimg = input.copy()
-        # ccimg[dst>0.01*dst.max()]=[0,0,255]
-        # cv.imshow("Edge", ccimg)
-        # cv.waitKey(0)
-
+    cv.imwrite('/home/bruno/Desktop/LABIAGI_grapesdetector/resHough.jpg',hough_image)
+    cv.imwrite('/home/bruno/Desktop/LABIAGI_grapesdetector/resEllipse.jpg',ellipse_image)
 
 if __name__ == "__main__":
     # main(sys.argv[1:])
