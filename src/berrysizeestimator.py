@@ -116,7 +116,6 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
                 cv.circle(res, (i[0], i[1]), 2, (0, 0, 255), 3)
                 diameter_cm = 2*i[2] /pixelsPerMetric
                 
-                
                 cv.putText(res, "{:.1f}cm".format(diameter_cm*pi),
                 (i[0],i[1]), cv.FONT_HERSHEY_SIMPLEX,
                 0.40, (255, 255, 255), 2)
