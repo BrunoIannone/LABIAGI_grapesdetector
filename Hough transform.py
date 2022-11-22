@@ -8,7 +8,7 @@ from rembg import remove
 #def main(argv):
 def main():
     #for i in range(len(argv)):
-    for image in glob.glob('/home/bruno/Desktop/LABIAGI_grapesdetector/test/*.jpg'):
+    for image in glob.glob('/home/bruno/Desktop/LABIAGI_grapesdetector/data/*.jpg'):
     #for image in glob.glob('test_img.png'):
       
 
@@ -31,12 +31,12 @@ def main():
         print(T)
         # for i in range(0,200):
         #     print(i)
-        #     test  = cv.Canny(img,0,i)
-        #     cv.imshow("detected circles", test)
+        #     data  = cv.Canny(img,0,i)
+        #     cv.imshow("detected circles", data)
         #     cv.waitKey(0)
 
-        # print(type(test))
-        # print(test)
+        # print(type(data))
+        # print(data)
         
         
         

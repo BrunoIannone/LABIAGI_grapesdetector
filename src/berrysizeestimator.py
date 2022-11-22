@@ -257,3 +257,4 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
             # cv.imshow("def_contour", image)
             # cv.waitKey(0)
+main

@@ -51,6 +51,7 @@ def main():
 
     cv.imwrite('/home/bruno/Desktop/LABIAGI_grapesdetector/resHough.jpg',hough_image)
     cv.imwrite('/home/bruno/Desktop/LABIAGI_grapesdetector/resEllipse.jpg',ellipse_image)
+main
 
 if __name__ == "__main__":
     # main(sys.argv[1:])

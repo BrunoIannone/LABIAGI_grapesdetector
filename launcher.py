@@ -16,8 +16,8 @@ project = rf.workspace("iagi").project("iagi")
 dataset = project.version(20).download("yolov5")
                                     #    img size  batch size   epochs                                              data.yaml dataset path
 os.system("sudo python3 yolov5/train.py --img 640 --batch 35 --epochs 300 --data /home/"+os.getlogin()+"/Desktop/LABIAGI_grapesdetector/IAGI-20/data.yaml  --cache")
-                                           #weights path                                                                              img size                                          test images path                       bbboux line thickness      min conf thresh
-os.system("sudo python3 yolov5/detect.py --weights /home/"+os.getlogin()+"/Desktop/LABIAGI_grapesdetector/yolov5/runs/train/exp6/weights/best.pt  --img 640  --conf 0.1 --source /home/"+os.getlogin()+"/Desktop/LABIAGI_grapesdetector/IAGI-20/test/images --line-thickness 1 --conf-thres 0.51 ")
+                                           #weights path                                                                              img size                                          data images path                       bbboux line thickness      min conf thresh
+os.system("sudo python3 yolov5/detect.py --weights /home/"+os.getlogin()+"/Desktop/LABIAGI_grapesdetector/yolov5/runs/train/exp6/weights/best.pt  --img 640  --conf 0.1 --source /home/"+os.getlogin()+"/Desktop/LABIAGI_grapesdetector/IAGI-20/data/images --line-thickness 1 --conf-thres 0.51 ")
 
 os.system("nautilus " +  "/home/"+os.getlogin()+"/Desktop/LABIAGI_grapesdetector/yolov5/runs/detect/exp6 &") #detected results
 
