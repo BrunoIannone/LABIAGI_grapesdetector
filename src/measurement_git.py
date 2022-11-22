@@ -44,14 +44,14 @@ def main():
             cropped = input_image[tl[1]:bl[1],tl[0]:br[0],: ].copy()
             
             #Per fini di test, applico lo stimatore con entrambi i test
-            estimator.DetectorHough(cropped, hough_image[tl[1]:bl[1],tl[0]:br[0],: ],(2*ref)/4.0)
+            #estimator.DetectorHough(cropped, hough_image[tl[1]:bl[1],tl[0]:br[0],: ],(2*ref)/4.0)
             estimator.DetectorEllipses(cropped, ellipse_image[tl[1]:bl[1],tl[0]:br[0],: ],(2*ref)/4.0)
             
             line = f.readline()
 
     cv.imwrite('/home/bruno/Desktop/LABIAGI_grapesdetector/resHough.jpg',hough_image)
     cv.imwrite('/home/bruno/Desktop/LABIAGI_grapesdetector/resEllipse.jpg',ellipse_image)
-main
+
 
 if __name__ == "__main__":
     # main(sys.argv[1:])

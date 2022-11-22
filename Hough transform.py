@@ -7,6 +7,7 @@ import glob
 from rembg import remove
 #def main(argv):
 def main():
+    j = 0
     #for i in range(len(argv)):
     for image in glob.glob('/home/bruno/Desktop/LABIAGI_grapesdetector/data/*.jpg'):
     #for image in glob.glob('test_img.png'):
@@ -19,16 +20,16 @@ def main():
         #cv.imwrite(output_path, output)
         #print(image)
         #cimg = cv.imread(image, 1)
-        cv.imshow("img",cimg)
-        cv.waitKey(0)
+        #cv.imshow("img",cimg)
+        #cv.waitKey(0)
 
         #cimg = cv.imread('download.png', 1)
-        img = cv.cvtColor(cimg, cv.COLOR_RGB2GRAY)
+        img = cv.cvtColor(cimg, cv.COLOR_BGR2GRAY)
         img = cv.medianBlur(img, 5)
-        (T, threshInv) = cv.threshold(img, 0, 255,	cv.THRESH_BINARY_INV | cv.THRESH_OTSU) #OTSU
-        cv.imshow("Threshold", threshInv)
-        cv.waitKey(0)
-        print(T)
+        (T, threshInv) = cv.threshold(img, 127, 255,	cv.THRESH_BINARY_INV | cv.THRESH_OTSU) #OTSU
+        #cv.imshow("Threshold", threshInv)
+        #cv.waitKey(0)
+        #print(T)
         # for i in range(0,200):
         #     print(i)
         #     data  = cv.Canny(img,0,i)
@@ -42,25 +43,27 @@ def main():
         
         #circles = cv.HoughCircles(img, cv.HOUGH_GRADIENT, dp=1, minDist=50, param1=40, param2=20, minRadius=0, maxRadius=0)<---- BUONO
         
-        for i in range(1):
-            ccimg = input.copy()
-            print(i)
-            circles = cv.HoughCircles(img, cv.HOUGH_GRADIENT, dp=2, minDist=50,param1= T, param2=30, minRadius=0, maxRadius=26)
+       
+            
+            
+        circles = cv.HoughCircles(threshInv, cv.HOUGH_GRADIENT, dp=2, minDist=50,param1= T, param2=30, minRadius=0, maxRadius=0)
         # # cv.imshow("detected circles", img)
         # # cv.waitKey(0)
         
-            if circles is not None:
-                circles = np.uint16(np.around(circles))
-                for i in circles[0, :]:
+        if circles is not None:
+            circles = np.uint16(np.around(circles))
+            for i in circles[0, :]:
+                ccimg = cimg.copy()
                  # draw the outer circle
-                    cv.circle(ccimg, (i[0], i[1]), i[2], (0, 255, 0), 2)
+                cv.circle(ccimg, (i[0], i[1]), i[2], (0, 255, 0), 2)
                     # draw the center of the circle
-                    cv.circle(ccimg, (i[0], i[1]), 2, (0, 0, 255), 3)
+                cv.circle(ccimg, (i[0], i[1]), 2, (0, 0, 255), 3)
         
-                cv.imshow("detected circles", ccimg)
-                cv.waitKey(0)
-                cv.destroyAllWindows()
-        
+                	#cv.imshow("detected circles", ccimg)
+                	#cv.waitKey(0)
+                	#cv.destroyAllWindows()
+                cv.imwrite("test" + str(j) + ".jpg",ccimg)
+                j+=1
     print("Exiting...")
     return 0
 

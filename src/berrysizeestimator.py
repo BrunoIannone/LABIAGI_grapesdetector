@@ -142,7 +142,7 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
 
     
-    def DrawResults(self,image,max_midpoint_tltr,max_midpoint_blbr,max_midpoint_tlbl,max_midpoint_trbr,maxDimA,maxDimB):
+    def DrawResults(self,image,max_midpoint_tltr,max_midpoint_blbr,max_midpoint_tlbl,max_midpoint_trbr,maxDimA,maxDimB,max_c):
         #cv.drawContours(image, [max_box.astype("int")], -1, (0, 255, 0), 2)
         
         # for (x, y) in max_box:
@@ -161,13 +161,14 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         cv.line(image, (int(max_midpoint_tlbl[0]), int(max_midpoint_tlbl[1])), (int(max_midpoint_trbr[0]), int(max_midpoint_trbr[1])),
                 (255, 0, 255), 2)
         cv.putText(image, "{:.1f}cm".format(maxDimA),
-                (int(max_midpoint_tltr[0]), int(
-                    max_midpoint_tltr[1])), cv.FONT_HERSHEY_SIMPLEX,
+                (int(max_midpoint_tltr[0]-100), int(
+                    max_midpoint_tltr[1]+100)), cv.FONT_HERSHEY_SIMPLEX,
                 0.40, (255, 255, 255), 2)
         cv.putText(image, "{:.1f}cm".format(maxDimB),
                 (int(max_midpoint_trbr[0]), int(
                     max_midpoint_trbr[1])), cv.FONT_HERSHEY_SIMPLEX,
                 0.40, (255, 255, 255), 2)
+        cv.drawContours(image,max_c,-1, (0, 255, 0), 2)
         return image
     def DetectorEllipses(self,cropped, image, pixelsPerMetric):
         img_gray = self.Preprocessing(cropped)
@@ -191,6 +192,7 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         max_midpoint_tlbl = 0
         max_midpoint_trbr = 0
         max_box = 0
+        max_c = 0
 
         for c in cnts:
 
@@ -200,7 +202,7 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
             # compute the rotated bounding box of the contour
 
             ellipse = cv.fitEllipse(c)
-
+            print(ellipse[0])
             box = cv.BoxPoints(ellipse) if imutils.is_cv2(
             ) else cv.boxPoints(ellipse)
             box = np.array(box, dtype="int")
@@ -224,7 +226,8 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
             dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
             dB = dist.euclidean((tlblX, tlblY), (trbrX, trbrY))
-
+            # if(dA >= image.shape[0]  or dB >= image.shape[1]):
+            #     continue
             dimA = dA / pixelsPerMetric
             dimB = dB / pixelsPerMetric
             if (dimA > maxDimA and dimB > maxDimB):
@@ -239,6 +242,7 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
                 max_midpoint_tlbl = (tlblX, tlblY)
                 max_midpoint_trbr = (trbrX, trbrY)
                 max_box = box.copy()
+                max_c = c
 
             # cv.imshow("temp_contour", orig)
             # cv.waitKey(0)
@@ -247,7 +251,7 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
         if (type(max_box) != type(0)): ##non è un punto
                   
-            self.DrawResults(image,max_midpoint_tltr,max_midpoint_blbr,max_midpoint_tlbl,max_midpoint_trbr,maxDimA,maxDimB)
+            self.DrawResults(image,max_midpoint_tltr,max_midpoint_blbr,max_midpoint_tlbl,max_midpoint_trbr,maxDimA,maxDimB,max_c)
 
             res = pi*(3*(maxDimA+maxDimB) -
                         math.sqrt((3*maxDimA+maxDimB)*(maxDimA+3*maxDimB)))
@@ -257,4 +261,4 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
             # cv.imshow("def_contour", image)
             # cv.waitKey(0)
-main
+
