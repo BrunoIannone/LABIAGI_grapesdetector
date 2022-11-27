@@ -170,9 +170,9 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         cv.circle(image, (int(max_midpoint_trbr[0]), int(
             max_midpoint_trbr[1])), 5, (255, 0, 0), -1)
         cv.line(image, (int(max_midpoint_tltr[0]), int(max_midpoint_tltr[1])), (int(max_midpoint_blbr[0]), int(max_midpoint_blbr[1])),
-                (255, 0, 255), 2)
+                (255, 0, 0), 2)
         cv.line(image, (int(max_midpoint_tlbl[0]), int(max_midpoint_tlbl[1])), (int(max_midpoint_trbr[0]), int(max_midpoint_trbr[1])),
-                (255, 0, 255), 2)
+                (0, 0, 255), 2)
         cv.putText(image, "{:.1f}cm".format(maxDimA),
                 (int(max_midpoint_tltr[0]), int(
                     max_midpoint_tltr[1])), cv.FONT_HERSHEY_SIMPLEX,
@@ -188,7 +188,7 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         return image
     def DetectorEllipses(self,cropped, image, pixelsPerMetric):
         img_gray = self.preprocessing(cropped)
-        img_gray = self.ThresholdedCanny(img_gray)
+        img_gray = self.thresholded_canny(img_gray)
         cnts = cv.findContours(
             image=img_gray, mode=cv.RETR_EXTERNAL, method=cv.CHAIN_APPROX_SIMPLE)
 
@@ -267,14 +267,16 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
         if (type(max_box) != type(0)): ##non è un punto
                   
-            self.DrawResults(image,max_midpoint_tltr,max_midpoint_blbr,max_midpoint_tlbl,max_midpoint_trbr,maxDimA,maxDimB,max_box)
+            self.draw_results(image,max_midpoint_tltr,max_midpoint_blbr,max_midpoint_tlbl,max_midpoint_trbr,maxDimA,maxDimB,max_box)
 
 
             res = pi*(3*(maxDimA+maxDimB) -
                         math.sqrt((3*maxDimA+maxDimB)*(maxDimA+3*maxDimB)))
             
-            print("Il perimetro dell'ellisse è: " + str(res))
             
+            #print("Il perimetro dell'ellisse è: " + str(res))
+            print((maxDimA,maxDimB))
+            return (maxDimA,maxDimB)
 
             # cv.imshow("def_contour", image)
             # cv.waitKey(0)
