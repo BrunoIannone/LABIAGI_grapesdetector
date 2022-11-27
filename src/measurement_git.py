@@ -8,7 +8,6 @@ import glob
 import math
 import berrysizeestimator as est
 import os
-from utils_git import *
 ROOT_DIR = os.path.realpath(os.path.dirname(__file__))
 
 def main():
