@@ -2,6 +2,8 @@
 __pycache__*
  review
 
-yolov5*
-IAGI-20*
-main
+yolov5/*
+IAGI-20/*
+.vscode/*
+.pytest/cache/*
+/home/bruno/Desktop/LABIAGI_grapesdetector/test/__pycache__/*
