@@ -9,6 +9,7 @@ import imutils
 from scipy.spatial import distance as dist
 import math
 
+
 class BerrySizeEstimatorAbstractClass(ABC):
     """ 
         Abstract class for berry size estimator
@@ -34,10 +35,9 @@ class BerrySizeEstimatorAbstractClass(ABC):
             Referiment detect method
         """
         pass
-    
+
 
 class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
-    #TODO: in questo caso l'estimator è unico, ma si potrebbe dividere per ellissi e cerchi
 
     def __init__(self, input_image):
         """
@@ -110,8 +110,8 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         img = cv.cvtColor(self.input_image, cv.COLOR_RGB2GRAY)
         img = cv.medianBlur(img, 5)
         (T, threshed_img) = cv.threshold(img, 127, 255,
-                                      cv.THRESH_BINARY_INV | cv.THRESH_OTSU)  # OTSU
-        
+                                         cv.THRESH_BINARY_INV | cv.THRESH_OTSU)  # OTSU
+
         circles = cv.HoughCircles(
             threshed_img, cv.HOUGH_GRADIENT, dp=2, minDist=50, param1=T, param2=100, minRadius=0, maxRadius=0)
 
@@ -137,10 +137,10 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         #preprocessed_img = self.back_ground_remover(image)
         preprocessed_img = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         preprocessed_img = cv.GaussianBlur(preprocessed_img, (5, 5), 0)
-        
+
         return preprocessed_img
 
-    def draw_hough_results(self,res,circle,pixels_per_metric):
+    def draw_hough_results(self, res, circle, pixels_per_metric):
         """Method that draws detected circles on the input image
 
         Args:
@@ -148,21 +148,21 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
             circle (array): Circle array [x_center,y_center,radius]
             pixels_per_metric (float): Pixels per metric ratio
         """
-        
+
         # draw the outer circle
         cv.circle(res, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)
         # draw the center of the circle
         cv.circle(res, (circle[0], circle[1]), 2, (0, 0, 255), 3)
-        diameter_cm = 2*circle[2] /pixels_per_metric
-        
-        ## UNCOMMENT TO DRAW PERIMETER RESULTS ON THE IMAGE ## 
+        diameter_cm = 2*circle[2] / pixels_per_metric
+
+        ## UNCOMMENT TO DRAW PERIMETER RESULTS ON THE IMAGE ##
 
         # cv.putText(res, "{:.1f}cm".format(diameter_cm*pi),
         # (i[0],i[1]), cv.FONT_HERSHEY_SIMPLEX,
         # 0.40, (255, 255, 255), 2)
         #print("La circonferenza è: " + str(diameter_cm *pi))
-        
-    def detector_hough(self, image, dest,pixels_per_metric):
+
+    def detector_hough(self, image, dest, pixels_per_metric):
         """Method that detect grapes with Hough circle transform
 
         Args:
@@ -182,15 +182,15 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
         circles = cv.HoughCircles(threshinv, cv.HOUGH_GRADIENT, dp=2,
                                   minDist=50, param1=T, param2=30, minRadius=0, maxRadius=0)
-        
+
         if (circles is not None):
             circles = np.uint16(np.around(circles))
-            self.draw_hough_results(dest,circles[0][0],pixels_per_metric)
-            return (circles[0][0][2] *2)/pixels_per_metric
+            self.draw_hough_results(dest, circles[0][0], pixels_per_metric)
+            return (circles[0][0][2] * 2)/pixels_per_metric
         else:
             return -1
 
-    def midpoint(self,ptA, ptB):
+    def midpoint(self, ptA, ptB):
         """ Method that calculates the midpoint between two points A and B
 
         Args:
@@ -200,12 +200,10 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         Returns:
             tuple of int: Calculated midpoint
         """
-        
+
         return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
-
-    
-    def draw_results(self,image,max_midpoint_tltr,max_midpoint_blbr,max_midpoint_tlbl,max_midpoint_trbr,maxDimA,maxDimB,max_box):
+    def draw_results(self, image, max_midpoint_tltr, max_midpoint_blbr, max_midpoint_tlbl, max_midpoint_trbr, maxDimA, maxDimB, max_box):
         """method that draws detected ellipses on the input image
 
         Args:
@@ -225,10 +223,10 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         ## UNCOMMENT FOR DRAW CONTOURS AND TEXT (text not well disposed) ##
 
         #cv.drawContours(image, [max_box.astype("int")], -1, (0, 255, 0), 2)
-        
+
         # for (x, y) in max_box:
-            #cv.circle(image, (int(x), int(y)), 5, (0, 0, 255), -1)
-    
+        #cv.circle(image, (int(x), int(y)), 5, (0, 0, 255), -1)
+
         cv.circle(image, (int(max_midpoint_tltr[0]), int(
             max_midpoint_tltr[1])), 5, (255, 0, 0), -1)
         cv.circle(image, (int(max_midpoint_blbr[0]), int(
@@ -249,14 +247,14 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
         #         (int(max_midpoint_trbr[0]), int(
         #             max_midpoint_trbr[1])), cv.FONT_HERSHEY_SIMPLEX,
         #         0.40, (255, 255, 255), 2)
-        #print(max_box)
+        # print(max_box)
         #cv.drawContours(image, [max_box.astype("int")], -1, (0, 255, 0), 2)
         # cv.imshow("res", image)
         # cv.waitKey(0)
 
         return image
-    
-    def DetectorEllipses(self,cropped, image, pixels_per_metric):
+
+    def DetectorEllipses(self, cropped, image, pixels_per_metric):
         """Method that detect grapes with ellipses
 
         Args:
@@ -265,7 +263,7 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
             pixels_per_metric (float): Pixels per metric ratio
 
         Returns:
-            tuple of int: Returns the two biggest axes (madxDimA,maxDimB) or nothing if there's no valid contour
+            tuple of int: Returns the two biggest axes (madxDimA,maxDimB) in cm or nothing if there's no valid contour
         """
         img_gray = cv.cvtColor(cropped, cv.COLOR_BGR2GRAY)
         img_gray = self.thresholded_canny(img_gray)
@@ -279,43 +277,42 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
 
         maxDimA = 0
         maxDimB = 0
-        
+
         max_midpoint_tltr = 0
         max_midpoint_blbr = 0
         max_midpoint_tlbl = 0
         max_midpoint_trbr = 0
         max_box = 0
-        
 
         for c in cnts:
 
             # if the contour is not sufficiently large, ignore it
             if cv.contourArea(c) < 1 or len(c) < 5:
                 continue
-            
+
             # compute the rotated bounding box of the contour
 
             ellipse = cv.fitEllipse(c)
-           
+
             box = cv.BoxPoints(ellipse) if imutils.is_cv2(
             ) else cv.boxPoints(ellipse)
             box = np.array(box, dtype="int")
-            
+
             # order the points in the contour such that they appear
             # in top-left, top-right, bottom-right, and bottom-left
             # order, then draw the outline of the rotated bounding
             # box
-            
+
             box = perspective.order_points(box)
 
             (tl, tr, br, bl) = box
 
             (tltrX, tltrY) = self.midpoint(tl, tr)
             (blbrX, blbrY) = self.midpoint(bl, br)
-            
+
             # compute the midpoint between the top-left and top-right points,
             # followed by the midpoint between the top-righ and bottom-right
-            
+
             (tlblX, tlblY) = self.midpoint(tl, bl)
             (trbrX, trbrY) = self.midpoint(tr, br)
             # draw the midpoints on the image
@@ -333,29 +330,24 @@ class BerrySizeEstimator(BerrySizeEstimatorAbstractClass):
             if (dimA > maxDimA and dimB > maxDimB):
                 maxDimA = dimA
                 maxDimB = dimB
-                
+
                 max_midpoint_tltr = (tltrX, tltrY)
                 max_midpoint_blbr = (blbrX, blbrY)
                 max_midpoint_tlbl = (tlblX, tlblY)
                 max_midpoint_trbr = (trbrX, trbrY)
                 max_box = box.copy()
-                
 
             # cv.imshow("temp_contour", orig)
             # cv.waitKey(0)
-        
+
         # draw the object sizes on the image
 
-        if (type(max_box) != type(0)): ##Not a point
-                  
-            self.draw_results(image,max_midpoint_tltr,max_midpoint_blbr,max_midpoint_tlbl,max_midpoint_trbr,maxDimA,maxDimB,max_box)
+        if (type(max_box) != type(0)):  # Not a point
 
+            self.draw_results(image, max_midpoint_tltr, max_midpoint_blbr,
+                              max_midpoint_tlbl, max_midpoint_trbr, maxDimA, maxDimB, max_box)
 
             res = pi*(3*(maxDimA+maxDimB) -
-                        math.sqrt((3*maxDimA+maxDimB)*(maxDimA+3*maxDimB)))
-            
-            
-            return (maxDimA,maxDimB)
+                      math.sqrt((3*maxDimA+maxDimB)*(maxDimA+3*maxDimB)))
 
-            
-
+            return (maxDimA, maxDimB)

@@ -1,12 +1,13 @@
-names:
-- grapes
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
 nc: 1
+names: ['grapes']
+
 roboflow:
-  license: CC BY 4.0
-  project: iagi
-  url: https://universe.roboflow.com/iagi/iagi/dataset/20
-  version: 20
   workspace: iagi
-test: ../data/images
-train: /home/bruno/Desktop/LABIAGI_grapesdetector//IAGI-20/train/images
-val: /home/bruno/Desktop/LABIAGI_grapesdetector//IAGI-20/valid/images
+  project: iagi
+  version: 20
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/iagi/iagi/dataset/20
